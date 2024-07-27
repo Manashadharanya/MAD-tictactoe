@@ -1,0 +1,179 @@
+activity_main.xml
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alignmentMode="alignMargins"
+        android:columnCount="3"
+        android:rowCount="3"
+        android:layout_centerInParent="true">
+
+        <Button
+            android:id="@+id/button0"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button1"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button2"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button3"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button4"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button5"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button6"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button7"
+            style="@style/GridButton" />
+        <Button
+            android:id="@+id/button8"
+            style="@style/GridButton" />
+
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gridLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Player X's turn"
+        android:textSize="20sp" />
+
+</RelativeLayout>
+
+
+------------------------------------------------
+
+styles.xml
+Add the following style to res/values/styles.xml:
+
+<style name="GridButton">
+    <item name="android:layout_width">100dp</item>
+    <item name="android:layout_height">100dp</item>
+    <item name="android:textSize">30sp</item>
+    <item name="android:textAllCaps">false</item>
+</style>
+
+-----------------------------------------------
+
+MainActivity.java
+
+package com.example.tictactoe;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.GridLayout;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private char currentPlayer = 'X';
+    private char[][] board = new char[3][3];
+    private boolean gameEnded = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        GridLayout gridLayout = findViewById(R.id.gridLayout);
+        TextView statusTextView = findViewById(R.id.statusTextView);
+
+        for (int i = 0; i < gridLayout.getChildCount(); i++) {
+            final int index = i;
+            Button button = (Button) gridLayout.getChildAt(i);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (gameEnded) {
+                        return;
+                    }
+
+                    int row = index / 3;
+                    int col = index % 3;
+
+                    if (board[row][col] == 0) {
+                        board[row][col] = currentPlayer;
+                        button.setText(String.valueOf(currentPlayer));
+
+                        if (checkWin()) {
+                            statusTextView.setText("Player " + currentPlayer + " wins!");
+                            gameEnded = true;
+                        } else if (isBoardFull()) {
+                            statusTextView.setText("It's a draw!");
+                            gameEnded = true;
+                        } else {
+                            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                            statusTextView.setText("Player " + currentPlayer + "'s turn");
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private boolean checkWin() {
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) {
+                return true;
+            }
+            if (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer) {
+                return true;
+            }
+        }
+        if (board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) {
+            return true;
+        }
+        if (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isBoardFull() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+------------------------------------
+
+TicTacToe/
+├── app/
+│   ├── build/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── com/
+│   │   │   │       └── example/
+│   │   │   │           └── tictactoe/
+│   │   │   │               └── MainActivity.java
+│   │   │   ├── res/
+│   │   │   │   ├── layout/
+│   │   │   │   │   └── activity_main.xml
+│   │   │   │   ├── values/
+│   │   │   │   │   └── styles.xml
+│   │   │   ├── AndroidManifest.xml
